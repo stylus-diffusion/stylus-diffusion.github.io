@@ -1,0 +1,6 @@
+@article{luo2024stylus,
+  title={Stylus: Automatic Adapter Selection for Diffusion Models},
+  author={Luo, Michael and Others},
+  booktitle={arXiv preprint arxiv:2302.09778},
+  year={2024}
+}

@@ -1,98 +1,170 @@
 
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>DreamBooth</title>
-<link href="./DreamBooth_files/style.css" rel="stylesheet">
-<script type="text/javascript" src="./DreamBooth_files/jquery.mlens-1.0.min.js"></script> 
-<script type="text/javascript" src="./DreamBooth_files/jquery.js"></script>
-</head>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Stylus: Automatic Adapter Selection for Diffusion Models</title>
+    <link href="./static/style.css" rel="stylesheet">
+  </head>
 
-<body>
-<div class="content">
-  <h1><strong>DreamBooth: Fine Tuning Text-to-Image Diffusion Models for Subject-Driven Generation</strong></h1>
-  <p id="authors"><span><a href="https://natanielruiz.github.io/"></a></span><a href="https://natanielruiz.github.io/">Nataniel Ruiz</a	> <a href="http://people.csail.mit.edu/yzli/">Yuanzhen Li</a> <a href="https://varunjampani.github.io/">Varun Jampani</a> <a href="https://research.google/people/106214/">Yael Pritch</a> <a href="http://people.csail.mit.edu/mrub/">Michael Rubinstein</a> <a href="https://kfiraberman.github.io/">Kfir Aberman</a><br>
-    <br>
-  <span style="font-size: 24px">Google Research
-  </span></p>
-  <br>
-  <img src="./DreamBooth_files/teaser_static.jpg" class="teaser-gif" style="width:100%;"><br>
-  <h3 style="text-align:center"><em>It’s like a photo booth, but once the subject is captured, it can be synthesized wherever your dreams take you…</em></h3>
-    <font size="+2">
-          <p style="text-align: center;">
-            <a href="https://arxiv.org/abs/2208.12242" target="_blank">[Paper]</a> &nbsp;&nbsp;&nbsp;&nbsp;
-	    (<font color="#C70039">new!</font>) <a href="https://github.com/google/dreambooth" target="_blank">[Dataset]</a> &nbsp;&nbsp;&nbsp;&nbsp;
-            <a href="DreamBooth_files/bibtex.txt" target="_blank">[BibTeX]</a>
-          </p>
-    </font>
-</div>
-<div class="content">
-  <h2 style="text-align:center;">Abstract</h2>
-  <p>Large text-to-image models achieved a remarkable leap in the evolution of AI, enabling high-quality and diverse synthesis of images from a given text prompt. However, these models lack the ability to mimic the appearance of subjects in a given reference set and synthesize novel renditions of them in different contexts. In this work, we present a new approach for "personalization" of text-to-image diffusion models (specializing them to users' needs). Given as input just a few images of a subject, we fine-tune a pretrained text-to-image model (Imagen, although our method is not limited to a specific model) such that it learns to bind a unique identifier with that specific subject. Once the subject is embedded in the output domain of the model, the unique identifier can then be used to synthesize fully-novel photorealistic images of the subject contextualized in different scenes. By leveraging the semantic prior embedded in the model with a new autogenous class-specific prior preservation loss, our technique enables synthesizing the subject in diverse scenes, poses, views, and lighting conditions that do not appear in the reference images. We apply our technique to several previously-unassailable tasks, including subject recontextualization, text-guided view synthesis, appearance modification, and artistic rendering (all while preserving the subject's key features).</p>
-</div>
-<div class="content">
-  <h2>Background</h2>
-  <p> Given a particular subject such as clock (shown in the real images on the left), it is very challenging to generate it in different contexts with state-of-the-art text-to-image models, while maintaining high fidelity to its key visual features. Even with dozens of iterations over a text prompt that contains a detailed description of the appearance of the clock (<em>"retro style yellow alarm clock with a white clock face and a yellow number three on the right part of the clock face in the jungle"</em>), the Imagen model [Saharia et al., 2022] can't reconstruct its key visual features (third column). Furthermore, even models whose text embedding lies in a shared language-vision space and can create semantic variations of the image, such as DALL-E2 [Ramesh et al., 2022], can neither reconstruct the appearance of the given subject nor modify the context (second column). In contrast, our approach (right) can synthesize the clock with high fidelity and in new contexts (<em>"a [V] clock in the jungle"</em>).</p>
-  <br>
-  <img class="summary-img" src="./DreamBooth_files/background.png" style="width:100%;"> <br>
-</div>
-<div class="content">
-  <h2>Approach</h2>
-  <p> Our method takes as input a few images (typically 3-5 images suffice, based on our experiments) of a subject (e.g., a specific dog) and the corresponding class name (e.g. "dog"), and returns a fine-tuned/"personalized'' text-to-image model that encodes a unique identifier that refers to the subject. Then, at inference, we can implant the unique identifier in different sentences to synthesize the subjects in difference contexts.</p>
-  <br>
-  <img class="summary-img" src="./DreamBooth_files/high_level.png" style="width:100%;"> <br>
-  <p>Given ~3-5 images of a subject we fine tune a text-to-image diffusion in two steps: (a) fine tuning the low-resolution text-to-image model with the input images paired with a text prompt containing a unique identifier and the name of the class the subject belongs to (e.g., "A photo of a [T] dog”), in parallel, we apply a class-specific prior preservation loss, which leverages the semantic prior that the model has on the class and encourages it to generate diverse instances belong to the subject's class by injecting the class name in the text prompt (e.g., "A photo of a dog”). (b) fine-tuning the super resolution components with pairs of low-resolution and high-resolution images taken from our input images set, which enables us to maintain high-fidelity to small details of the subject.</p>
-  <br>
-  <img class="summary-img" src="./DreamBooth_files/system.png" style="width:100%;"> <br>
-</div>
-<div class="content">
-  <h2>Results</h2>
-  <p>Results for re-contextualization of a bag and vase subject instances. By finetuning a model using our method we are able to generate different images of the a subject instance in different environments, with high preservation of subject details and realistic interaction between the scene and the subject. We display the conditioning prompts below each image. </p>
-<img class="summary-img" src="./DreamBooth_files/results.png" style="width:100%;">
-</div>
-<div class="content">
-  <h2>Art Rendition</h2>
-  <p>Original artistic renditions of our subject dog in the style of famous painters. We remark that many of the generated poses were not seen in the training set, such as the Van Gogh and Warhol rendition. We also note that some renditions seem to have novel composition and faithfully imitate the style of the painter - even suggesting some sort of creativity (extrapolation given previous knowledge).</p>
-  <br>
-  <img class="summary-img" src="./DreamBooth_files/art.png" style="width:100%;"> <br>
-</div>
-<div class="content">
-  <h2>Text-Guided View Synthesis</h2>
-  <p>Our technique can synthesized images with specified viewpoints for a subject cat (left to right: top, bottom, side and back views). Note that the generated poses are  different from the input poses, and the background changes in a realistic manner given a pose change. We also highlight the preservation of complex fur patterns on the subject cat's forehead.</p>
-  <br>
-  <img class="summary-img" src="./DreamBooth_files/novel_views.png" style="width:100%;"> <br>
-</div>
-<div class="content">
-  <h2>Property Modification</h2>
-  <p>We show color modifications in the first row (using prompts ``a [color] [V] car''), and crosses between a specific dog and different animals in the second row (using prompts ``a cross of a [V] dog and a [target species]''). We highlight the fact that our method preserves unique visual features that give the subject its identity or essence, while performing the required property modification.</p>
-  <br>
-  <img class="summary-img" src="./DreamBooth_files/property_modification.png" style="width:100%;"> <br>
-</div>
-<div class="content">
-  <h2>Accessorization</h2>
-  <p>Outfitting a dog with accessories. The identity of the subject is preserved and many different outfits or accessories can be applied to the dog given a prompt of type <em>"a [V] dog wearing a police/chef/witch outfit''</em>. We observe a realistic interaction between the subject dog and the outfits or accessories, as well as a large variety of possible options.</p>
-  <br>
-  <img class="summary-img" src="./DreamBooth_files/accessories.png" style="width:100%;"> <br>
-</div>
-<div class="content">
-  <h2>Societal Impact</h2>
-  <p>This project aims to provide users with an effective tool for synthesizing personal subjects (animals, objects) in different contexts. While general text-to-image models might be biased towards specific attributes when synthesizing images from text, our approach enables the user to get a better reconstruction of their desirable subjects. On contrary, malicious parties might try to use such images to mislead viewers. This is a common issue, existing in other generative models approaches or content manipulation techniques. Future research in generative modeling, and specifically of personalized generative priors, must continue investigating and revalidating these concerns.</p>
-  <br>
-</div>
-<div class="content">
-  <h2>BibTex</h2>
-  <code> @article{ruiz2022dreambooth,<br>
-  &nbsp;&nbsp;title={DreamBooth: Fine Tuning Text-to-image Diffusion Models for Subject-Driven Generation},<br>
-  &nbsp;&nbsp;author={Ruiz, Nataniel and Li, Yuanzhen and Jampani, Varun and Pritch, Yael and Rubinstein, Michael and Aberman, Kfir},<br>
-  &nbsp;&nbsp;booktitle={arXiv preprint arxiv:2208.12242},<br>
-  &nbsp;&nbsp;year={2022}<br>
-  } </code> 
-</div>
-<div class="content" id="acknowledgements">
-  <p><strong>Acknowledgements</strong>:
-    We thank Rinon Gal, Adi Zicher, Ron Mokady, Bill Freeman, Dilip Krishnan, Huiwen Chang and Daniel Cohen-Or for their valuable inputs that helped improve this work, and to Mohammad Norouzi, Chitwan Saharia and William Chan for providing us with their support and the pretrained models of Imagen. Finally, a special thank you to David Salesin for his feedback, advice and for his support for the project.
-    <!-- Recycling a familiar <a href="https://chail.github.io/latent-composition/">template</a> ;). --> 
-  </p>
-</div>
-</body>
+  <body>
+      <div class="content">
+        <h1><strong>
+          Stylus: Automatic Adapter Selection for Diffusion Models
+        </strong></h1>
+        <p id="authors">
+          <span><a href=""></a></span>
+          <a href="" style="pointer-events: none; text-decoration:none; color: black;">Michael Luo</a><sup style="margin-left: -7px;">1</sup>
+          <a href="" style="pointer-events: none; text-decoration:none; color: black;">Justin Wong</a><sup style="margin-left: -7px;">1</sup>
+          <a href="" style="pointer-events: none; text-decoration:none; color: black;">Brandon Trabucco</a><sup style="margin-left: -7px;">2</sup>
+          <a href="" style="pointer-events: none; text-decoration:none; color: black;">Yanping Huang</a><sup style="margin-left: -7px;">3</sup>
+          <a href="" style="pointer-events: none; text-decoration:none; color: black;">Zhifeng Chen</a><sup style="margin-left: -7px;">3</sup>
+          <a href="" style="pointer-events: none; text-decoration:none; color: black;">Ruslan Salakhutdinov</a><sup style="margin-left: -7px;">2</sup>
+          <a href="" style="pointer-events: none; text-decoration:none; color: black;">Ion Stoica</a><sup style="margin-left: -7px;">1</sup>
+          <br><br>
+          <span style="font-size: 22px;"><sup>1</sup>UC Berkeley</span>
+          <!-- <br> -->
+          &nbsp;&nbsp;&nbsp;
+          <span style="font-size: 22px"><sup>2</sup>Carnegie Mellon University MLD</span>
+          <!-- <br> -->
+          &nbsp;&nbsp;&nbsp;
+          <span style="font-size: 22px"><sup>3</sup>Google Deepmind</span>
+        </p>
+        <br>
+        <img src="./static/images/intro.svg" class="teaser-gif" style="width:100%">
+        <br>
+        <p style="text-align: center; font-size: 18px;">
+          <em>
+            Stylus automatically selects and composesthe perfect adapters in response to a user's prompt, resulting in <strong>beautiful and creative images that are tailor-made for each user</strong>.
+          </em>
+        </p>
+        <p style="text-align: center; font-size: 20px;">
+          <a href="" target="_blank">[Paper]</a>
+          &nbsp;&nbsp;&nbsp;
+          <a href="./static/bibtex.txt" target="_blank">[BibTeX]</a>
+          &nbsp;&nbsp;&nbsp;
+          <a href="https://github.com/michaelzhiluo/stylus" target="_blank">[Code]</a>
+        </p>
+      </div>
+
+      <div class="content">
+        <h2 style="text-align: center;">Abstract</h2>
+        <p style="font-size: 18px">
+          Beyond scaling base models with more data or parameters, fine-tuned adapters provide an alternative way to generate high fidelity, custom images at reduced costs. As such, adapters have been widely adopted by open-source communities, accumulating a database of over 100K adapters—most of which are highly customized with insufficient descriptions. To generate high quality images, this paper explores the problem of matching the prompt to a Stylus of relevant adapters, built on recent work that highlight the performance gains of composing adapters. We introduce Stylus, which efficiently selects and automatically composes task-specific adapters based on a prompt's keywords. Stylus outlines a three-stage approach that first summarizes adapters with improved descriptions and embeddings, retrieves relevant adapters, and then further assembles adapters based on prompts' keywords by checking how well they fit the prompt. To evaluate Stylus, we developed <strong>StylusDocs</strong>, a curated dataset featuring 75K adapters with pre-computed adapter embeddings. In our evaluation on popular Stable Diffusion checkpoints, Stylus achieves greater CLIP/FID Pareto efficiency and is twice as preferred, with humans and multimodal models as evaluators, over the base model.
+        </p>
+      </div>
+
+      <div class="content">
+        <h2>Approach</h2>
+        <p style="font-size: 18px">
+          Our method consists of three components: the <strong>Refiner</strong>, <strong>Retrieval</strong>, and <strong>Composer</strong>. 
+        </p>
+        <br>
+        <img class="summary-img" src="./static/images/method.svg" style="width:100%;">
+        <p>
+          <p style="font-size: 18px">
+            <strong>Refiner</strong> - The refiner employs a two-stage approach to compute an adapter's task description and embeddings. First, the refiner's vision-language model (VLM) takes in an adapter's model card (e.g. <a href="https://civitai.com/models/6526/studio-ghibli-style-lora">Studio Ghibli LoRA</a>)—example images, associated prompts, and an author-provided description—and outputs an improved adapter description. Second, the encoder converts an adapter's description into a lookup embedding. This process is repeated for all adapters in our database.
+          </p>  
+          <p style="font-size: 18px">
+            <strong>Retriever</strong> - Similar to retrieval-based methods (e.g. RAG), the retreiver encodes a user's prompt and fetches the top K closest adapters in the embedding space (e.g. cosine similarity). 
+          </p>  
+          <p style="font-size: 18px">
+            <strong>Composer</strong> - The composer serves a dual purpose: it segments the prompt into tasks from a prompt's keywords and assigns retrieved adapters to tasks. This implicitly filters out adapters that are not semantically aligned with the prompt and detects those likely to introduce foreign bias to the prompt through keyword grounding. The composer is a long-context LLM that takes in the top K adapter descriptions (from the retriever) and outputs a mapping from a prompt's tasks to relevant adapters.
+          </p>  
+      </div>
+
+      <div class="content">
+        <h2>Main Results</h2>
+        <img class="summary-img" src="./static/images/checkpoints.svg" style="width:100%;">
+        <p style="font-size: 18px">
+          <strong>Human Evaluation</strong> - Stylus achieves higher human preference scores (~2x) over two popular Stable Diffusion checkpoints, Realistic-Vision-v6 for realistic images and Counterfeit-v3 for anime/cartoon images, and datasets, Microsoft COCO and PartiPrompts.
+        </p>
+        <img class="summary-img" src="./static/images/human_eval.svg" style="width:100%;">
+        <p style="font-size: 18px">
+          <strong>Automatic Metrics (Left)</strong> - For the COCO dataset, Stylus shifts the CLIP/FID pareto curve towards greater efficiency, improving textual alignment, visual fidelity, and image diversity across prompts.
+        </p>
+        <p style="font-size: 18px">
+          <strong>GPT-4V as a Judge (Right)</strong> - Barring ties, Stylus is twice as preferred for visual fidelity and ties the base model for textual alignment.
+        </p>
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <img class="summary-img" src="./static/images/pareto.svg" style="width:50%; margin-right: 20px;">
+          <img class="summary-img" src="./static/images/gpt4_eval.svg" style="width:30%;">
+        </div>
+
+      </div>
+      
+      <div class="content">
+        <h2>Image Diversity</h2>
+        <p style="font-size: 18px">
+          Given the same prompt, Stylus (left) generates more diverse and comprehensive sets of images than that of existing Stable Diffusion checkpoints (right).
+        </p>
+        <img class="summary-img" src="./static/images/image_diversity.svg" style="width:100%;"><br><br>
+      </div>
+
+      <div class="content">
+        <h2>Image-to-Image Tasks</h2>
+        <p style="font-size: 18px">
+          <strong>Image Translation</strong> - Stylus chooses relevant adapters that better introduce new themes and elements into existing images.
+        </p>
+        <img class="summary-img" src="./static/images/img2img.svg" style="width:100%;"><br><br>
+        <p style="font-size: 18px">
+          <strong>Inpainting</strong> - Stylus chooses adapters than can better integrate new characters, objects, or concepts within an inpainted mask.
+        </p>
+        <img class="summary-img" src="./static/images/inpainting.svg" style="width:100%;"><br><br>
+      </div>
+
+      <div class="content">
+        <h2>Stylus vs. Retrieval-based Methods</h2>
+        <p style="font-size: 18px">
+          Stylus outperforms all other retrieval-based methods, which choose adapters than either introduce foreign concepts to the image or override other concepts in the prompt, which reduces textual alignment.
+        </p>
+        <img class="summary-img" src="./static/images/retrieval.svg" style="width:100%;"><br><br>
+      </div>
+
+
+      <div class="content">
+        <h2>Practicality</h2>
+        <p style="font-size: 18px">
+          Stylus is generally practical and introduces a small 12(s) overhead on top of the base image generation process. This overhead remains the same as batch size increases.
+        </p>
+        <img class="summary-img" src="./static/images/time.svg" style="width:65%;"><br><br>
+      </div>
+
+      <div class="content">
+        <h2>BibTex</h2>
+        <code> @article{lmichael2024stylus,<br>
+          &nbsp;&nbsp;title={Stylus: Automatic Adapter Selection for Diffusion Models},<br>
+          &nbsp;&nbsp;author={Luo, Michael and Others.},<br>
+          &nbsp;&nbsp;booktitle={arXiv preprint arxiv:2302.09778},<br>
+          &nbsp;&nbsp;year={2024}<br>
+          } </code>
+      </div>
+
+      <div class="content">
+        <h2>Acknowledgements</h2>
+        <p style="font-size: 18px">
+          We thank Lisa Dunlap, Ansh Chaurasia, Siyuan Zhuang, Sijun Tan, Shishir Patil, Tianjun Zhang, and Joey Gonzalez for their insightful comments and discussion. We thank Google Deepmind for funding this project, providing AI infrastructure, and provisioning Gemini endpoints. Sky Computing Lab is supported by gifts from Accenture, AMD, Anyscale, Google, IBM, Intel, Microsoft, Mohamed Bin Zayed University of Artificial Intelligence, Samsung SDS, SAP, Uber, and VMware. 
+        </p>
+      </div>
+
+      <div class="content">
+        <h2 style="text-align: center;">We Are Hiring!</h2>
+        <p style="font-size: 18px">
+          Explore the forefront of <strong>image/video model serving and building AI agents</strong> with us! We're on the hunt for talented, motivated, and creative individuals eager to tackle exciting research challenges and opportunities in this dynamic field.
+
+          Interested? We'd love to hear from you. Please send your CV to <a href="mailto:michael.luo@berkeley.edu">Michael Luo</a>. Join us and turn your passion into impact!
+        </p>
+      </div>
+
+      <br><br>
+      <footer class="footer">
+        <div class="container">
+          <div class="columns is-centered">
+            <!-- <div class="content"> -->
+              Website template from <a href="https://dreambooth.github.io/">Dreambooth</a>
+            <!-- </div> -->
+          </div>
+        </div>
+      </footer>
+      <br><br>
+  </body>
 </html>
