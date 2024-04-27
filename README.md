@@ -17,7 +17,7 @@ Beyond scaling base models with more data or parameters, fine-tuned adapters pro
 
 <img src="./docs/static/images/intro.jpg"></img>
 
-## Roadmap
+## Roadmap (~1-2 weeks)
 
 - [ ] Release Stylus inference pipeline.
 - [ ] Release Stylus evaluation scripts.
