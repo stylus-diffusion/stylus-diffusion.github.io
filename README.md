@@ -8,7 +8,7 @@
 
 ## 🌎 Overview
 
-Stylus automatically retrieves and composes relevant adapters based on prompts' keywords
+Stylus automatically retrieves and composes relevant adapters based on prompts' keywords.
 
 
 ## 🔮 Abstract
