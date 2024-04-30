@@ -1,6 +1,8 @@
-@article{luo2024stylus,
-  title={Stylus: Automatic Adapter Selection for Diffusion Models},
-  author={Luo, Michael and Others},
-  booktitle={arXiv preprint arxiv:2302.09778},
-  year={2024}
+@misc{luo2024stylus,
+      title={Stylus: Automatic Adapter Selection for Diffusion Models}, 
+      author={Michael Luo and Justin Wong and Brandon Trabucco and Yanping Huang and Joseph E. Gonzalez and Zhifeng Chen and Ruslan Salakhutdinov and Ion Stoica},
+      year={2024},
+      eprint={2404.18928},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
 }
